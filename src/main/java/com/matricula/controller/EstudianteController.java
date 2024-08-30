@@ -35,6 +35,16 @@ public class EstudianteController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<EstudianteDTO>> findById(@PathVariable("id") String id){
+        return service.findById(id)
+                .map(this::convertToDto)
+                .map(e -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(e))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public Mono<ResponseEntity<EstudianteDTO>> save(@RequestBody EstudianteDTO dto, final ServerHttpRequest req){
         return service.save(this.convertToDocument(dto))
@@ -43,6 +53,34 @@ public class EstudianteController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(e))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public  Mono<ResponseEntity<EstudianteDTO>> update(@PathVariable("id") String id,@RequestBody EstudianteDTO dto){
+        return Mono.just(this.convertToDocument(dto))
+                .map(e -> {
+                    e.setId(id);
+                    return e;
+                })//Mono<Dish>
+                .flatMap(e -> service.update(id,e))//Mono<Dish>
+                .map(this::convertToDto)
+                .map(e -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(e))
+                .defaultIfEmpty(ResponseEntity.notFound().build())
+                ;
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> delete(@PathVariable("id") String id){
+        return service.delete(id)
+                .flatMap(r -> {
+                    if(r){
+                        return Mono.just(ResponseEntity.noContent().build());
+                    }else {
+                        return Mono.just(ResponseEntity.notFound().build());
+                    }
+                });
     }
 
     private EstudianteDTO convertToDto(Estudiante model){
