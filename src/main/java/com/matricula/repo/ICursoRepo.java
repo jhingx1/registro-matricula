@@ -1,4 +1,6 @@
 package com.matricula.repo;
 
-public interface ICursoRepo {
+import com.matricula.model.Curso;
+
+public interface ICursoRepo extends IGenericRepo<Curso,String>{
 }

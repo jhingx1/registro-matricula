@@ -24,5 +24,4 @@ public class Curso {
     private String siglas;
     @Field
     private Boolean estado;
-
 }
