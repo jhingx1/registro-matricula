@@ -20,4 +20,9 @@ public class MapperConfig {
         return new ModelMapper();
     }
 
+    @Bean(name = "matriculaMapper")
+    public ModelMapper matriculaMapper(){
+        return new ModelMapper();
+    }
+
 }

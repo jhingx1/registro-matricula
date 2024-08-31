@@ -83,6 +83,28 @@ public class EstudianteController {
                 });
     }
 
+    @GetMapping("/ordenados-asc-por-edad")
+    public Mono<ResponseEntity<Flux<EstudianteDTO>>> obtenerEstudiantesOrdenadosPorEdad() {
+        Flux<EstudianteDTO> fx =service.listarEstudiantesOrdenadosPorEdad()
+                .map(e -> this.convertToDto(e));
+
+        return Mono.just(ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fx))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/ordenados-des-por-edad")
+    public Mono<ResponseEntity<Flux<EstudianteDTO>>> obtenerEstudiantesOrdenadosPorEdadxDesc() {
+        Flux<EstudianteDTO> fx =service.listarEstudiantesOrdenadosPorEdadxDes()
+                .map(e -> this.convertToDto(e));
+
+        return Mono.just(ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(fx))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
     private EstudianteDTO convertToDto(Estudiante model){
         return modelMapper.map(model,EstudianteDTO.class);
     }
