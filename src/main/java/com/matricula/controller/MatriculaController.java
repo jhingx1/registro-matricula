@@ -62,7 +62,33 @@ public class MatriculaController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public  Mono<ResponseEntity<MatriculaDTO>> update(@PathVariable("id") String id,@RequestBody MatriculaDTO dto){
+        return Mono.just(this.convertToDocument(dto))
+                .map(e -> {
+                    e.setId(id);
+                    return e;
+                })
+                .flatMap(e -> service.update(id,e))
+                .map(this::convertToDto)
+                .map(e -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(e))
+                .defaultIfEmpty(ResponseEntity.notFound().build())
+                ;
+    }
 
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<Void>> delete(@PathVariable("id") String id){
+        return service.delete(id)
+                .flatMap(r -> {
+                    if(r){
+                        return Mono.just(ResponseEntity.noContent().build());
+                    }else {
+                        return Mono.just(ResponseEntity.notFound().build());
+                    }
+                });
+    }
 
     private MatriculaDTO convertToDto(Matricula model){
         return modelMapper.map(model, MatriculaDTO.class);
