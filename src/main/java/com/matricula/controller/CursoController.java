@@ -3,6 +3,7 @@ package com.matricula.controller;
 import com.matricula.dto.CursoDTO;
 import com.matricula.model.Curso;
 import com.matricula.service.ICursoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +46,7 @@ public class CursoController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<CursoDTO>> save(@RequestBody CursoDTO dto, final ServerHttpRequest req){
+    public Mono<ResponseEntity<CursoDTO>> save(@Valid @RequestBody CursoDTO dto, final ServerHttpRequest req){
         return service.save(this.convertToDocument(dto))
                 .map(this::convertToDto)
                 .map(e -> ResponseEntity.created(URI.create(req.getURI().toString().concat(e.getId())))
@@ -55,7 +56,7 @@ public class CursoController {
     }
 
     @PutMapping("/{id}")
-    public  Mono<ResponseEntity<CursoDTO>> update(@PathVariable("id") String id,@RequestBody CursoDTO dto){
+    public  Mono<ResponseEntity<CursoDTO>> update(@Valid @PathVariable("id") String id,@RequestBody CursoDTO dto){
         return Mono.just(this.convertToDocument(dto))
                 .map(e -> {
                     e.setId(id);
