@@ -3,6 +3,7 @@ package com.matricula.handler;
 import com.matricula.dto.CursoDTO;
 import com.matricula.model.Curso;
 import com.matricula.service.ICursoService;
+import com.matricula.validator.RequestValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +24,8 @@ public class CursoHandler {
 
     @Qualifier("defatulMapper")
     private final ModelMapper modelMapper;
+
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> findAll(ServerRequest request){
         return ServerResponse
@@ -49,6 +52,7 @@ public class CursoHandler {
         Mono<CursoDTO> monoCursoDTO = request.bodyToMono(CursoDTO.class);
 
         return monoCursoDTO
+                .flatMap(requestValidator::validate)
                 .flatMap(e -> service.save(convertToDocument(e)))
                 .map(this::convertToDto)
                 .flatMap(e -> ServerResponse
@@ -65,6 +69,7 @@ public class CursoHandler {
                     e.setId(id);
                     return e;
                 })
+                .flatMap(requestValidator::validate)
                 .flatMap(e -> service.update(id,convertToDocument(e)))
                 .map(this::convertToDto)
                 .flatMap(e -> ServerResponse
